@@ -16,7 +16,6 @@ sudo chef-solo -c /var/chef/config/chefsolo.rb -j /var/chef/roles/nagios-remote.
 
 
 Things installed by the cookbook
-====== ========= == === ========
 
 Nagios-plugins-1.4.16
 NRPE 2.13
