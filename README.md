@@ -1,32 +1,75 @@
-Hello Everyone
+**NRPE and Nagios-Plugins Cookbook**
 
-This repository contains a chef-solo cookbook that can be used to install nagios-plugins and NRPE on a remote server ready for monitoring.
+This cookbook makes the installation of the Nagios Remote Plugin Executor (NRPE) and Nagios-Plugins on remote servers a lot easier.
 
+It installs:-
 
-The installNagiosRemote.sh script if used will install ruby 1.9.3 along with the chef-solo gem, and then go on to checkout and install nagios-plugins together with NRPE.
+* NRPE version 2.13
+* Nagios plugins version 1.4.16
 
+**Requirments**
 
-Should you already have ruby and the chef-solo gem installed then you can do:-
+This cookbook has been written and tested on a Ubuntu 11.04 system.  It should however work on other Ubuntu releases.
 
-sudo git clone https://github.com/strtwtsn/NagiosRemote.git /var/chef  // This will clone the repository into your /var/chef directory
-
-and then run
-
-sudo chef-solo -c /var/chef/config/chefsolo.rb -j /var/chef/roles/nagios-remote.json // This will run the cookbook and install the relevant packages.
-
-
-Things installed by the cookbook
-
-Nagios-plugins-1.4.16
-NRPE 2.13
-Nagios-NRPE-Server startup script which will be added to the default runlevels.
+Ruby 1.9.3 and the chef-solo gem.
 
 
-It will also start the service.
-
-You can check the install was sucessful by /usr/local/nagios/libexec/check_nrpe -H localhost.  If everything has worked as it should you should see NRPE v2.13.
 
 
-To allow your Nagios server to monitor your remote host you need to change the allowed_hosts hosts line of /usr/local/nagios/etc/nrpe.cfg to include the IP address or hostname of your Nagios server.
+**How can I execute the cookbook?**
+
+If you are installing on a clean system (i.e one without ruby etc) then the repo contains a batch script installNagiosRemote.sh which will do the following:-
 
 
+* Install ruby 1.9.3 and it's dependencies
+* Install the chef gem
+* Clone the NagiosRemote repo to /var/chef
+* Execute the nagios-remote recipe which does the following:-
+	* Installs libssl-dev
+	* Creates a local nagios user
+	* Downloads and installs nagios-plugins from http://www.nagios.org
+	* Downloads and installs NRPE
+	* Adds a startup script for the nagios-nrpe-server service to /etc/init.d/
+
+If the server you wish to install NRPE and the nagios plugins on already has Ruby 1.9.3 installed then you can comment out the lines below from the script.
+
+>apt-get -y update
+
+>apt-get -y install build-essential zlib1g-dev libssl-dev libreadline-dev libyaml-dev git
+
+>cd /usr/local/src
+
+>wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p194.tar.gz
+
+>tar -xvzf ruby-1.9.3-p194.tar.gz
+
+> cd ruby-1.9.3-p194/
+
+> ./configure --prefix=/usr/local
+
+> make && make install
+
+>rm /usr/local/src/ruby-1.9.3-p194.tar.gz
+
+and start the script with
+
+> gem install chef ruby-shadow --no-ri --no-rdoc
+
+
+**How can I check that the installation was successful?**
+
+After the cookbook has finished executing you can check that the install was successful by doing the following:-
+
+ /usr/local/nagios/libexec/check_nrpe -H localhost
+
+If everything has completed  successfully then you should see NRPE v2.13.
+
+**OK, that completed successfuly.....what do I need to do to get the remote server monitored by my Nagios server.**
+
+Before you can monitor your remote server you need to add the ip address or hostname of your Nagios server to the
+
+> allowed_hosts=127.0.0.1 <ip or hostname of nagios server here>
+
+of /usr/local/nagios/etc/nrpe.cfg file 
+
+and then execute /etc/init.d/nagios-nrpe-server to restart the NRPE service.
