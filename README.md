@@ -64,7 +64,7 @@ After the cookbook has finished executing you can check that the install was suc
 
 If everything has completed  successfully then you should see NRPE v2.13.
 
-**OK, that completed successfuly.....what do I need to do to get the remote server monitored by my Nagios server>?**
+**OK, that completed successfuly.....what do I need to do to get the remote server monitored by my Nagios server?**
 
 Before you can monitor your remote server you need to add the ip address or hostname of your Nagios server to the
 
